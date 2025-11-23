@@ -37,10 +37,18 @@ const login=async(req,res)=>{
          if(!match){
             throw new Error("Invalid Password")
          }
+         const reply={
+            firstName:  user.firstName,
+            emailId: user.emailId,
+            _id: user._id
+         }
          if (!process.env.JWT_TOKEN) return res.status(500).send("Server misconfiguration: JWT_TOKEN not set")
           const token=jwt.sign({_id:user._id,emailId:emailId,role:'user'},process.env.JWT_TOKEN,{expiresIn: 60*60});
           res.cookie('token',token,{maxAge: 60*60*1000})
-          res.send("Logged in successfully")
+          res.status(201).json({
+            user:reply,
+            message:"Login successfull"
+          })
     }
     catch(err){
         res.status(401).send("Error: "+err)
